@@ -11,11 +11,12 @@ class AuthController extends GetxController {
     isLoggedIn.value = _box.read('loggedIn') ?? false;
   }
 
-  void login(String username, String password) {
-    if (username == 'admin' && password == '1234') {
+  // Login ด้วยอีเมลและรหัสผ่าน ถ้าสำเร็จจะไปหน้า home_page.dart ทันที
+  void login(String email, String password) {
+    if (email == 'admin' && password == '1234') {
       isLoggedIn.value = true;
       _box.write('loggedIn', true);
-      Get.offAllNamed('/home');
+      Get.offAllNamed('/home'); // ไปหน้า home_page.dart ทันที
     } else {
       Get.snackbar('Error', 'Invalid credentials');
     }

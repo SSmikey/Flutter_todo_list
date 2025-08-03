@@ -19,7 +19,7 @@ class LoginPage extends StatelessWidget {
           children: [
             TextField(
               controller: usernameCtrl,
-              decoration: const InputDecoration(labelText: 'Username'),
+              decoration: const InputDecoration(labelText: 'Email'),
             ),
             const SizedBox(height: 12),
             TextField(
@@ -33,7 +33,7 @@ class LoginPage extends StatelessWidget {
                 authCtrl.login(usernameCtrl.text, passwordCtrl.text);
               },
               child: const Text('Login'),
-            )
+            ),
           ],
         ),
       ),
