@@ -1,25 +1,135 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../controllers/auth_controller.dart';
+import '../controllers/todo_controller.dart';
+import '../models/todo_model.dart';
+import '../widgets/todo_card.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+  HomePage({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    final authCtrl = Get.find<AuthController>();
+  final TodoController controller = Get.put(TodoController());
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Home'),
+  void _showAddOrEditDialog(BuildContext context, {TodoModel? existing}) {
+    final titleC = TextEditingController(text: existing?.title ?? '');
+    final categoryC = TextEditingController(text: existing?.category ?? '');
+    DateTime? pickedDate = existing?.dueDate;
+
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text(existing == null ? 'เพิ่ม ToDo' : 'แก้ไข ToDo'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(controller: titleC, decoration: const InputDecoration(labelText: 'หัวข้อ')),
+              TextField(controller: categoryC, decoration: const InputDecoration(labelText: 'หมวดหมู่')),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  const Text('วันครบกำหนด: '),
+                  Text(pickedDate != null ? pickedDate.toLocal().toString().split(' ')[0] : 'ไม่ระบุ'),
+                  IconButton(
+                    icon: const Icon(Icons.calendar_today),
+                    onPressed: () async {
+                      final dt = await showDatePicker(
+                        context: context,
+                        initialDate: pickedDate ?? DateTime.now(),
+                        firstDate: DateTime(2000),
+                        lastDate: DateTime(2100),
+                      );
+                      if (dt != null) pickedDate = dt;
+                    },
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () => authCtrl.logout(),
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('ยกเลิก')),
+          ElevatedButton(
+            onPressed: () {
+              final title = titleC.text.trim();
+              final category = categoryC.text.trim();
+              if (title.isEmpty) return;
+              if (existing == null) {
+                controller.addTodo(title, category, pickedDate);
+              } else {
+                controller.deleteTodo(existing.id);
+                controller.addTodo(title, category, pickedDate);
+              }
+              Navigator.pop(context);
+            },
+            child: Text(existing == null ? 'เพิ่ม' : 'บันทึก'),
           ),
         ],
       ),
-      body: const Center(child: Text('Welcome to your Todo List!')),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('รายการ ToDo'),
+        actions: [
+          Obx(() => Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: Center(
+                  child: Text(
+                    'เสร็จ: ${controller.doneCount}  ค้าง: ${controller.pendingCount}',
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                ),
+              )),
+          IconButton(
+            icon: const Icon(Icons.delete_sweep),
+            tooltip: 'ล้างทั้งหมด',
+            onPressed: () {
+              controller.clearAll();
+            },
+          ),
+        ],
+      ),
+      body: Obx(() {
+        if (controller.todos.isEmpty) {
+          return const Center(child: Text('ไม่มีรายการ ToDo'));
+        }
+        return ListView.builder(
+          itemCount: controller.todos.length,
+          itemBuilder: (_, index) {
+            final todo = controller.todos[index];
+            return TodoCard(
+              todo: todo,
+              onToggle: (_) => controller.toggleTodo(todo.id),
+              onEdit: (_) => _showAddOrEditDialog(context, existing: todo),
+              onDelete: (_) => showDialog(
+                context: context,
+                builder: (_) => AlertDialog(
+                  title: const Text('ยืนยันลบ'),
+                  content: const Text('ต้องการลบรายการนี้หรือไม่?'),
+                  actions: [
+                    TextButton(onPressed: () => Navigator.pop(context), child: const Text('ยกเลิก')),
+                    ElevatedButton(
+                      onPressed: () {
+                        controller.deleteTodo(todo.id);
+                        Navigator.pop(context);
+                      },
+                      child: const Text('ลบ'),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      }),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _showAddOrEditDialog(context),
+        tooltip: 'เพิ่มรายการ ToDo',
+        child: const Icon(Icons.add),
+      ),
     );
   }
 }
