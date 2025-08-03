@@ -14,7 +14,7 @@ class TodoFormPage extends StatefulWidget {
 class _TodoFormPageState extends State<TodoFormPage> {
   final todoCtrl = Get.find<TodoController>();
   final titleCtrl = TextEditingController();
-  final noteCtrl = TextEditingController();
+  // final noteCtrl = TextEditingController();
   final categoryCtrl = TextEditingController();
   DateTime? dueDate;
 
@@ -25,9 +25,9 @@ class _TodoFormPageState extends State<TodoFormPage> {
     super.initState();
     final args = Get.arguments;
     if (args != null && args['todo'] != null) {
-      final Todo todo = args['todo'];
+      final TodoModel todo = args['todo'];
       titleCtrl.text = todo.title;
-      noteCtrl.text = todo.note ?? '';
+      // noteCtrl.text = todo.note ?? '';
       categoryCtrl.text = todo.category ?? '';
       dueDate = todo.dueDate;
       index = args['index'];
@@ -47,12 +47,12 @@ class _TodoFormPageState extends State<TodoFormPage> {
               decoration: const InputDecoration(labelText: 'Title'),
             ),
             const SizedBox(height: 12),
-            TextField(
-              controller: noteCtrl,
-              decoration: const InputDecoration(labelText: 'Note'),
-              maxLines: 3,
-            ),
-            const SizedBox(height: 12),
+            // TextField(
+            //   controller: noteCtrl,
+            //   decoration: const InputDecoration(labelText: 'Note'),
+            //   maxLines: 3,
+            // ),
+            // const SizedBox(height: 12),
             TextField(
               controller: categoryCtrl,
               decoration: const InputDecoration(labelText: 'Category'),
@@ -87,21 +87,15 @@ class _TodoFormPageState extends State<TodoFormPage> {
             ElevatedButton(
               onPressed: () {
                 final title = titleCtrl.text.trim();
-                final note = noteCtrl.text.trim();
+                // final note = noteCtrl.text.trim();
                 final category = categoryCtrl.text.trim();
                 if (title.isEmpty) return;
 
-                final todo = Todo(
-                  title: title,
-                  note: note,
-                  category: category,
-                  dueDate: dueDate,
-                );
-
                 if (index == null) {
-                  todoCtrl.addTodo(todo);
+                  todoCtrl.addTodo(title, category, dueDate);
                 } else {
-                  todoCtrl.updateTodo(index!, todo);
+                  // หากต้องการแก้ไข ต้องเพิ่มเมธอด updateTodo ใน controller
+                  // todoCtrl.updateTodo(index!, todo);
                 }
 
                 Get.back();

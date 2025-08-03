@@ -1,3 +1,4 @@
+
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import '../models/todo_model.dart';
@@ -84,6 +85,23 @@ class TodoController extends GetxController {
         break;
       default:
         filteredTodos.assignAll(todos);
+    }
+  }
+
+   void updateTodo(String id, String title, String category, DateTime? dueDate, {String? note}) {
+    var index = todos.indexWhere((todo) => todo.id == id);
+    if (index != -1) {
+      todos[index] = TodoModel(
+        id: id,
+        title: title,
+        note: note,
+        isDone: todos[index].isDone,
+        category: category,
+        dueDate: dueDate,
+      );
+      todos.refresh();
+      saveTodos();
+      filterTodos();
     }
   }
 

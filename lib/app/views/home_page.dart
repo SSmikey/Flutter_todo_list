@@ -111,25 +111,6 @@ class HomePage extends StatelessWidget {
             final todo = controller.todos[index];
             return TodoCard(
               todo: todo,
-              onToggle: (_) => controller.toggleTodo(todo.id),
-              onEdit: (_) => _showAddOrEditDialog(context, existing: todo),
-              onDelete: (_) => showDialog(
-                context: context,
-                builder: (_) => AlertDialog(
-                  title: const Text('ยืนยันลบ'),
-                  content: const Text('ต้องการลบรายการนี้หรือไม่?'),
-                  actions: [
-                    TextButton(onPressed: () => Navigator.pop(context), child: const Text('ยกเลิก')),
-                    ElevatedButton(
-                      onPressed: () {
-                        controller.deleteTodo(todo.id);
-                        Navigator.pop(context);
-                      },
-                      child: const Text('ลบ'),
-                    ),
-                  ],
-                ),
-              ),
             );
           },
         );
