@@ -4,23 +4,29 @@ import '../models/todo_model.dart';
 
 class TodoController extends GetxController {
   var todos = <TodoModel>[].obs;
+  var filteredTodos = <TodoModel>[].obs;
+  var filter = 'all'.obs;
   var box = GetStorage();
 
   @override
   void onInit() {
     super.onInit();
     loadTodos();
+    ever(filter, (_) => filterTodos());
   }
 
   void loadTodos() {
     final storedTodos = box.read<List>('todos');
     if (storedTodos != null) {
       todos.assignAll(storedTodos.map((e) => TodoModel.fromJson(e)).toList());
+      filterTodos();
     }
+    filterTodos();
   }
 
   void saveTodos() {
     box.write('todos', todos.map((e) => e.toJson()).toList());
+    filterTodos();
   }
 
   void addTodo(String title, String category, DateTime? dueDate) {
@@ -32,6 +38,7 @@ class TodoController extends GetxController {
       dueDate: dueDate,
     ));
     saveTodos();
+    filterTodos();
   }
 
   void toggleTodo(String id) {
@@ -40,17 +47,44 @@ class TodoController extends GetxController {
       todos[index].isDone = !todos[index].isDone;
       todos.refresh();
       saveTodos();
+      filterTodos();
     }
   }
 
   void deleteTodo(String id) {
     todos.removeWhere((todo) => todo.id == id);
     saveTodos();
+    filterTodos();
   }
 
   void clearAll() {
     todos.clear();
     saveTodos();
+    filterTodos();
+  }
+
+  void setFilter(String value) {
+    filter.value = value;
+    filterTodos();
+  }
+
+  void filterTodos() {
+    switch (filter.value) {
+      case 'done':
+        filteredTodos.assignAll(todos.where((todo) => todo.isDone));
+        break;
+      case 'pending':
+        filteredTodos.assignAll(todos.where((todo) => !todo.isDone));
+        break;
+      case 'work':
+        filteredTodos.assignAll(todos.where((todo) => todo.category == 'งาน'));
+        break;
+      case 'personal':
+        filteredTodos.assignAll(todos.where((todo) => todo.category == 'ส่วนตัว'));
+        break;
+      default:
+        filteredTodos.assignAll(todos);
+    }
   }
 
   int get doneCount => todos.where((todo) => todo.isDone).length;

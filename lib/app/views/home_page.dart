@@ -14,6 +14,15 @@ class HomePage extends StatelessWidget {
     final categoryC = TextEditingController(text: existing?.category ?? '');
     DateTime? pickedDate = existing?.dueDate;
 
+    String getDateString(DateTime? date) {
+      if (date == null) return 'ไม่ระบุ';
+      try {
+        return "${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}";
+      } catch (_) {
+        return 'ไม่ระบุ';
+      }
+    }
+
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
@@ -28,7 +37,7 @@ class HomePage extends StatelessWidget {
               Row(
                 children: [
                   const Text('วันครบกำหนด: '),
-                  Text(pickedDate != null ? pickedDate.toLocal().toString().split(' ')[0] : 'ไม่ระบุ'),
+                  Text(getDateString(pickedDate)),
                   IconButton(
                     icon: const Icon(Icons.calendar_today),
                     onPressed: () async {

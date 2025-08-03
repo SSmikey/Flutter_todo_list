@@ -10,7 +10,7 @@ class AppPages {
 
   static final routes = [
     GetPage(name: '/login', page: () => const LoginPage()),
-    GetPage(name: '/home', page: () => const HomePage()),
+    GetPage(name: '/home', page: () => HomePage()),
     GetPage(name: '/form', page: () => const TodoFormPage()),
     GetPage(name: '/stats', page: () => const StatsPage()),
   ];
