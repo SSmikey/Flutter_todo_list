@@ -13,6 +13,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+<<<<<<< HEAD
     return GetMaterialApp(
       title: 'To Do List',
       debugShowCheckedModeBanner: false,
@@ -21,6 +22,14 @@ class MyApp extends StatelessWidget {
       darkTheme: ThemeData.dark(useMaterial3: true),
       initialRoute: AppPages.INITIAL,
       getPages: AppPages.routes,
+=======
+    return const MaterialApp(
+      home: Scaffold(
+        body: Center(
+          child: Text('Hello World!'),//fkgnlfk
+        ),
+      ),
+>>>>>>> 9a556d92962f64774da06e8e84fe1c3165551b7d
     );
   }
 }
