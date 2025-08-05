@@ -2,29 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/auth_controller.dart';
 
-class LoginPage extends StatelessWidget {
-  const LoginPage({super.key});
+class RegisterPage extends StatelessWidget {
+  const RegisterPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     final authCtrl = Get.find<AuthController>();
+    final nameCtrl = TextEditingController();
     final emailCtrl = TextEditingController();
     final passwordCtrl = TextEditingController();
-
-    // เช็ค argument ที่ส่งมาจาก RegisterPage
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final args = ModalRoute.of(context)?.settings.arguments;
-      if (args is Map && args['successMessage'] != null) {
-        Get.snackbar(
-          'สำเร็จ',
-          args['successMessage'],
-          backgroundColor: Colors.green.shade100,
-          colorText: Colors.green,
-          duration: const Duration(seconds: 2),
-          snackPosition: SnackPosition.TOP,
-        );
-      }
-    });
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5F6FA),
@@ -43,33 +29,28 @@ class LoginPage extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    CircleAvatar(
-                      radius: 36,
-                      backgroundColor: Colors.blue.shade100,
-                      child: const Icon(
-                        Icons.calendar_today,
-                        size: 40,
-                        color: Colors.blue,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
                     const Text(
-                      'To Do List ✔️',
+                      'สร้างบัญชีใหม่',
                       style: TextStyle(
                         fontSize: 26,
                         fontWeight: FontWeight.bold,
                         color: Colors.blue,
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'ลงชื่อเข้าใช้เพื่อดำเนินการต่อ',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.grey.shade700,
+                    const SizedBox(height: 32),
+                    TextField(
+                      controller: nameCtrl,
+                      decoration: InputDecoration(
+                        labelText: 'ชื่อผู้ใช้',
+                        prefixIcon: const Icon(Icons.person_outline),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        filled: true,
+                        fillColor: Colors.grey.shade100,
                       ),
                     ),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 16),
                     TextField(
                       controller: emailCtrl,
                       decoration: InputDecoration(
@@ -109,38 +90,14 @@ class LoginPage extends StatelessWidget {
                           backgroundColor: Colors.blue,
                         ),
                         onPressed: () {
-                          final result = authCtrl.login(
+                          authCtrl.register(
+                            nameCtrl.text.trim(),
                             emailCtrl.text.trim(),
                             passwordCtrl.text.trim(),
                           );
-                          if (result['success'] == true) {
-                            Get.snackbar(
-                              'สำเร็จ',
-                              'เข้าสู่ระบบสำเร็จ!',
-                              backgroundColor: Colors.green.shade100,
-                              colorText: Colors.green,
-                              duration: const Duration(seconds: 1),
-                              snackPosition: SnackPosition.TOP,
-                            );
-                            Future.delayed(
-                              const Duration(milliseconds: 300),
-                              () {
-                                Get.offAllNamed('/home');
-                              },
-                            );
-                          } else {
-                            Get.snackbar(
-                              'การเข้าสู่ระบบล้มเหลว',
-                              result['errorMessage'] ?? 'เกิดข้อผิดพลาด',
-                              backgroundColor: Colors.red.shade100,
-                              colorText: Colors.red,
-                              duration: const Duration(seconds: 2),
-                              snackPosition: SnackPosition.TOP,
-                            );
-                          }
                         },
                         child: const Text(
-                          'เข้าสู่ระบบ',
+                          'สมัครสมาชิก',
                           style: TextStyle(fontSize: 18),
                         ),
                       ),
@@ -150,13 +107,13 @@ class LoginPage extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const Text(
-                          'ยังไม่มีบัญชี ?',
+                          'มีบัญชีอยู่แล้ว? ',
                           style: TextStyle(fontSize: 15),
                         ),
                         TextButton(
-                          onPressed: () => Get.toNamed('/register'),
+                          onPressed: () => Get.offAllNamed('/login'),
                           child: const Text(
-                            'สร้างบัญชีใหม่',
+                            'เข้าสู่ระบบ',
                             style: TextStyle(fontSize: 15),
                           ),
                         ),
