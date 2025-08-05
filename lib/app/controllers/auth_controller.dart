@@ -40,49 +40,37 @@ class AuthController extends GetxController {
   }
 
   // สมัครสมาชิกใหม่
-  void register(String name, String email, String password) {
+  Future<Map<String, dynamic>> register(
+    String name,
+    String email,
+    String password,
+  ) async {
     final normalizedEmail = email.trim().toLowerCase();
     if (!isValidEmail(normalizedEmail)) {
-      Get.snackbar(
-        'ข้อผิดพลาด',
-        'กรุณาใส่อีเมลที่ถูกต้อง',
-        backgroundColor: Colors.red.shade100,
-        colorText: Colors.red,
-        snackPosition: SnackPosition.TOP,
-      );
-      return;
+      return {'success': false, 'errorMessage': 'กรุณาใส่อีเมลที่ถูกต้อง'};
     }
     if (users.any(
       (u) => (u['email'] as String).trim().toLowerCase() == normalizedEmail,
     )) {
-      Get.snackbar(
-        'ข้อผิดพลาด',
-        'อีเมลนี้ถูกลงทะเบียนแล้ว',
-        backgroundColor: Colors.red.shade100,
-        colorText: Colors.red,
-        snackPosition: SnackPosition.TOP,
-      );
-      return;
+      return {'success': false, 'errorMessage': 'อีเมลนี้ถูกลงทะเบียนแล้ว'};
     }
     users.add({'name': name, 'email': normalizedEmail, 'password': password});
     saveUsers();
-    // redirect พร้อม successMessage
-    Get.offAllNamed(
-      '/login',
-      arguments: {
-        'successMessage': 'สร้างบัญชีผู้ใช้เรียบร้อยแล้ว! กรุณาเข้าสู่ระบบ.',
-      },
-    );
+    return {'success': true};
   }
 
   /// login: return true ถ้าสำเร็จ, false ถ้า fail, และ errorMessage
-  Map<String, dynamic> login(String email, String password) {
-    if (!isValidEmail(email)) {
+  Future<Map<String, dynamic>> login(String email, String password) async {
+    final normalizedEmail = email.trim().toLowerCase();
+    if (!isValidEmail(normalizedEmail)) {
       return {'success': false, 'errorMessage': 'กรุณาใส่อีเมลที่ถูกต้อง.'};
     }
     final user = users.isNotEmpty
         ? users.firstWhere(
-            (u) => u['email'] == email && u['password'] == password,
+            (u) =>
+                (u['email'] as String).trim().toLowerCase() ==
+                    normalizedEmail &&
+                u['password'] == password,
             orElse: () => {},
           )
         : {};
