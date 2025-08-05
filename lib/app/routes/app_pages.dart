@@ -6,7 +6,7 @@ import '../views/todo_form_page.dart';
 import '../views/stats_page.dart';
 
 class AppPages {
-  static String INITIAL = '/login';
+  static String initial = '/login';
 
   static final routes = [
     GetPage(name: '/login', page: () => const LoginPage()),
