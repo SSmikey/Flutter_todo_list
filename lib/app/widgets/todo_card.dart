@@ -17,7 +17,7 @@ class TodoCard extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Card(
-      elevation: 3,
+      elevation: (cardColor == Colors.teal.withOpacity(0.15)) ? 0 : 3,
       margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       color: cardColor,
@@ -28,8 +28,7 @@ class TodoCard extends StatelessWidget {
         ),
         title: Text(
           todo.title,
-          style: TextStyle(
-            decoration: todo.isDone ? TextDecoration.lineThrough : null,
+          style: const TextStyle(
             fontWeight: FontWeight.bold,
           ),
         ),

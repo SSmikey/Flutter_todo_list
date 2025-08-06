@@ -124,23 +124,39 @@ class HomePage extends StatelessWidget {
 
   Widget _buildStatBox(String count, String label, Color color) {
     return Expanded(
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 4),
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: color.withOpacity(0.15),
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              count,
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: color),
-            ),
-            const SizedBox(height: 4),
-            Text(label, style: TextStyle(color: color)),
-          ],
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: () {
+          if (label == "Work") {
+            controller.setFilter('งาน');
+          } else if (label == "School") {
+            controller.setFilter('โรงเรียน');
+          } else if (label == "Personal") {
+            controller.setFilter('ส่วนตัว');
+          } else if (label == "Other") {
+            controller.setFilter('อื่นๆ');
+          } else {
+            controller.setFilter('');
+          }
+        },
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 4),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.15),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                count,
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: color),
+              ),
+              const SizedBox(height: 4),
+              Text(label, style: TextStyle(color: color)),
+            ],
+          ),
         ),
       ),
     );
@@ -217,14 +233,15 @@ class HomePage extends StatelessWidget {
               // Tasks List
               Expanded(
                 child: Obx(() {
-                  if (controller.todos.isEmpty) {
+                  final filtered = controller.filteredTodos;
+                  if (filtered.isEmpty) {
                     return const Center(child: Text('ไม่มีรายการ ToDo'));
                   }
                   return ListView.separated(
-                    itemCount: controller.todos.length,
+                    itemCount: filtered.length,
                     separatorBuilder: (_, __) => const Divider(height: 1),
                     itemBuilder: (_, index) {
-                      final todo = controller.todos[index];
+                      final todo = filtered[index];
                       String dateTimeStr = '';
                       if (todo.dueDate != null) {
                         final d = todo.dueDate!;
