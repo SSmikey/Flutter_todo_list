@@ -181,49 +181,65 @@ class HomePage extends StatelessWidget {
 
   Widget _buildStatBox(String count, String label, Color color) {
     return Expanded(
-      child: InkWell(
-        borderRadius: BorderRadius.circular(16),
-        onTap: () {
-          if (label == "Completed") {
-            controller.setFilter('completed');
-          } else if (label == "Pending") {
-            controller.setFilter('pending');
-          } else if (label == "Work") {
-            controller.setFilter('งาน');
-          } else if (label == "School") {
-            controller.setFilter('โรงเรียน');
-          } else if (label == "Personal") {
-            controller.setFilter('ส่วนตัว');
-          } else if (label == "Other") {
-            controller.setFilter('อื่นๆ');
-          } else {
-            controller.setFilter('');
-          }
-        },
-        child: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 4),
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: color.withOpacity(0.15),
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                count,
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: color,
+      child: Obx(() {
+        // Map label to filter value
+        String filterValue = '';
+        switch (label) {
+          case "Completed":
+            filterValue = 'completed';
+            break;
+          case "Pending":
+            filterValue = 'pending';
+            break;
+          case "Work":
+            filterValue = 'งาน';
+            break;
+          case "School":
+            filterValue = 'โรงเรียน';
+            break;
+          case "Personal":
+            filterValue = 'ส่วนตัว';
+            break;
+          case "Other":
+            filterValue = 'อื่นๆ';
+            break;
+          default:
+            filterValue = '';
+        }
+        final isActive = controller.filter.value == filterValue;
+        return InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: () {
+            controller.setFilter(filterValue);
+          },
+          child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 4),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: isActive
+                  ? color.withOpacity(0.35)
+                  : color.withOpacity(0.15),
+              borderRadius: BorderRadius.circular(16),
+              border: isActive ? Border.all(color: color, width: 2) : null,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  count,
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: color,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 4),
-              Text(label, style: TextStyle(color: color)),
-            ],
+                const SizedBox(height: 4),
+                Text(label, style: TextStyle(color: color)),
+              ],
+            ),
           ),
-        ),
-      ),
+        );
+      }),
     );
   }
 
@@ -342,31 +358,37 @@ class HomePage extends StatelessWidget {
                       }
                       return Padding(
                         padding: const EdgeInsets.symmetric(vertical: 4.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            TodoCard(
-                              todo: todo,
-                              cardColor: todo.isDone == true
-                                  ? Colors.teal.withOpacity(0.15)
-                                  : Colors.white,
-                            ),
-                            if (dateTimeStr.isNotEmpty)
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                  left: 12,
-                                  top: 2,
-                                  bottom: 8,
-                                ),
-                                child: Text(
-                                  'กำหนด: $dateTimeStr',
-                                  style: const TextStyle(
-                                    fontSize: 13,
-                                    color: Colors.grey,
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(12),
+                          onTap: () {
+                            _showAddOrEditDialog(context, existing: todo);
+                          },
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              TodoCard(
+                                todo: todo,
+                                cardColor: todo.isDone == true
+                                    ? Colors.teal.withOpacity(0.15)
+                                    : Colors.white,
+                              ),
+                              if (dateTimeStr.isNotEmpty)
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                    left: 12,
+                                    top: 2,
+                                    bottom: 8,
+                                  ),
+                                  child: Text(
+                                    'กำหนด: $dateTimeStr',
+                                    style: const TextStyle(
+                                      fontSize: 13,
+                                      color: Colors.grey,
+                                    ),
                                   ),
                                 ),
-                              ),
-                          ],
+                            ],
+                          ),
                         ),
                       );
                     },
