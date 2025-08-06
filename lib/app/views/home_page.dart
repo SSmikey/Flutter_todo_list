@@ -11,54 +11,76 @@ class HomePage extends StatelessWidget {
 
   void _showAddOrEditDialog(BuildContext context, {TodoModel? existing}) {
     final titleC = TextEditingController(text: existing?.title ?? '');
-    final categoryC = TextEditingController(text: existing?.category ?? '');
+    final List<String> categories = ['งาน', 'โรงเรียน', 'ส่วนตัว', 'อื่นๆ'];
+    String selectedCategory = existing?.category ?? categories[0];
     DateTime? pickedDate = existing?.dueDate;
+    TimeOfDay? pickedTime = existing?.dueDate != null
+        ? TimeOfDay(hour: existing!.dueDate!.hour, minute: existing.dueDate!.minute)
+        : null;
 
-    String getDateString(DateTime? date) {
+    String getDateTimeString(DateTime? date, TimeOfDay? time) {
       if (date == null) return 'ไม่ระบุ';
-      try {
-        return "${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}";
-      } catch (_) {
-        return 'ไม่ระบุ';
-      }
+      final dateStr = "${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}";
+      final timeStr = time != null ? "${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}" : '--:--';
+      return "$dateStr $timeStr";
     }
 
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
         title: Text(existing == null ? 'เพิ่ม ToDo' : 'แก้ไข ToDo'),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: titleC,
-                decoration: const InputDecoration(labelText: 'หัวข้อ'),
-              ),
-              TextField(
-                controller: categoryC,
-                decoration: const InputDecoration(labelText: 'หมวดหมู่'),
-              ),
-              const SizedBox(height: 10),
-              Row(
-                children: [
-                  const Text('วันครบกำหนด: '),
-                  Text(getDateString(pickedDate)),
-                  IconButton(
-                    icon: const Icon(Icons.calendar_today),
-                    onPressed: () async {
-                      final dt = await showDatePicker(
-                        context: context,
-                        initialDate: pickedDate ?? DateTime.now(),
-                        firstDate: DateTime(2000),
-                        lastDate: DateTime(2100),
-                      );
-                      if (dt != null) pickedDate = dt;
-                    },
-                  ),
-                ],
-              ),
-            ],
+        content: StatefulBuilder(
+          builder: (context, setState) => SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: titleC,
+                  decoration: const InputDecoration(labelText: 'หัวข้อ'),
+                ),
+                const SizedBox(height: 10),
+                DropdownButtonFormField<String>(
+                  value: selectedCategory,
+                  decoration: const InputDecoration(labelText: 'หมวดหมู่'),
+                  items: categories.map((cat) => DropdownMenuItem(
+                    value: cat,
+                    child: Text(cat),
+                  )).toList(),
+                  onChanged: (val) {
+                    if (val != null) setState(() => selectedCategory = val);
+                  },
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    const Text('วันครบกำหนด: '),
+                    Text(getDateTimeString(pickedDate, pickedTime)),
+                    IconButton(
+                      icon: const Icon(Icons.calendar_today),
+                      onPressed: () async {
+                        final dt = await showDatePicker(
+                          context: context,
+                          initialDate: pickedDate ?? DateTime.now(),
+                          firstDate: DateTime(2000),
+                          lastDate: DateTime(2100),
+                        );
+                        if (dt != null) setState(() => pickedDate = dt);
+                      },
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.access_time),
+                      onPressed: () async {
+                        final tm = await showTimePicker(
+                          context: context,
+                          initialTime: pickedTime ?? TimeOfDay.now(),
+                        );
+                        if (tm != null) setState(() => pickedTime = tm);
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
         actions: [
@@ -69,13 +91,27 @@ class HomePage extends StatelessWidget {
           ElevatedButton(
             onPressed: () {
               final title = titleC.text.trim();
-              final category = categoryC.text.trim();
+              final category = selectedCategory;
               if (title.isEmpty) return;
+              DateTime? finalDate;
+              if (pickedDate != null) {
+                if (pickedTime != null) {
+                  finalDate = DateTime(
+                    pickedDate!.year,
+                    pickedDate!.month,
+                    pickedDate!.day,
+                    pickedTime!.hour,
+                    pickedTime!.minute,
+                  );
+                } else {
+                  finalDate = pickedDate;
+                }
+              }
               if (existing == null) {
-                controller.addTodo(title, category, pickedDate);
+                controller.addTodo(title, category, finalDate);
               } else {
                 controller.deleteTodo(existing.id);
-                controller.addTodo(title, category, pickedDate);
+                controller.addTodo(title, category, finalDate);
               }
               Navigator.pop(context);
             },
@@ -129,7 +165,7 @@ class HomePage extends StatelessWidget {
                       Icon(Icons.calendar_today, size: 20),
                       SizedBox(width: 8),
                       Text(
-                        "test day",
+                        "Tasks management",
                         style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                     ],
@@ -139,23 +175,34 @@ class HomePage extends StatelessWidget {
               const SizedBox(height: 24),
 
               // Statistics Grid
-              Column(
-                children: [
-                  Row(
-                    children: [
-                      _buildStatBox("32", "Completed", Colors.teal),
-                      _buildStatBox("24", "Pending", Colors.deepOrange),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      _buildStatBox("16", "Cancelled", Colors.pink),
-                      _buildStatBox("08", "Ongoing", Colors.indigo),
-                    ],
-                  ),
-                ],
-              ),
+              Obx(() {
+                final todos = controller.todos;
+                final completed = todos.where((t) => t.isDone == true).length;
+                final pending = todos.where((t) => t.isDone != true).length;
+                final work = todos.where((t) => t.category == 'งาน').length;
+                final school = todos.where((t) => t.category == 'โรงเรียน').length;
+                final personal = todos.where((t) => t.category == 'ส่วนตัว').length;
+                final other = todos.where((t) => t.category == 'อื่นๆ').length;
+                return Column(
+                  children: [
+                    Row(
+                      children: [
+                        _buildStatBox(completed.toString(), "Completed", Colors.teal),
+                        _buildStatBox(pending.toString(), "Pending", Colors.red),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        _buildStatBox(work.toString(), "Work", Colors.pink),
+                        _buildStatBox(school.toString(), "School", Colors.orangeAccent),
+                        _buildStatBox(personal.toString(), "Personal", Colors.deepPurpleAccent),
+                        _buildStatBox(other.toString(), "Other", Colors.indigo),
+                      ],
+                    ),
+                  ],
+                );
+              }),
               const SizedBox(height: 24),
 
               // Tasks header
@@ -178,9 +225,31 @@ class HomePage extends StatelessWidget {
                     separatorBuilder: (_, __) => const Divider(height: 1),
                     itemBuilder: (_, index) {
                       final todo = controller.todos[index];
+                      String dateTimeStr = '';
+                      if (todo.dueDate != null) {
+                        final d = todo.dueDate!;
+                        dateTimeStr = "${d.day.toString().padLeft(2, '0')}/${d.month.toString().padLeft(2, '0')}/${d.year} "
+                          "${d.hour.toString().padLeft(2, '0')}:${d.minute.toString().padLeft(2, '0')}";
+                      }
                       return Padding(
                         padding: const EdgeInsets.symmetric(vertical: 4.0),
-                        child: TodoCard(todo: todo),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            TodoCard(
+                              todo: todo,
+                              cardColor: todo.isDone == true ? Colors.teal.withOpacity(0.15) : Colors.white,
+                            ),
+                            if (dateTimeStr.isNotEmpty)
+                              Padding(
+                                padding: const EdgeInsets.only(left: 12, top: 2, bottom: 8),
+                                child: Text(
+                                  'กำหนด: $dateTimeStr',
+                                  style: const TextStyle(fontSize: 13, color: Colors.grey),
+                                ),
+                              ),
+                          ],
+                        ),
                       );
                     },
                   );

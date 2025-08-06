@@ -7,21 +7,20 @@ import 'package:intl/intl.dart';
 
 class TodoCard extends StatelessWidget {
   final TodoModel todo;
+  final Color? cardColor;
   final TodoController controller = Get.find();
 
-  TodoCard({super.key, required this.todo});
+  TodoCard({super.key, required this.todo, this.cardColor});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final dueText = todo.dueDate != null
-        ? DateFormat('dd MMM yyyy').format(todo.dueDate!)
-        : 'ไม่มีกำหนด';
 
     return Card(
       elevation: 3,
       margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      color: cardColor,
       child: ListTile(
         leading: Checkbox(
           value: todo.isDone,
@@ -40,7 +39,7 @@ class TodoCard extends StatelessWidget {
             if (todo.category != null && todo.category!.isNotEmpty)
               Text('หมวดหมู่: ${todo.category!}',
                   style: theme.textTheme.bodySmall),
-            Text('กำหนด: $dueText', style: theme.textTheme.bodySmall),
+            
           ],
         ),
         trailing: IconButton(

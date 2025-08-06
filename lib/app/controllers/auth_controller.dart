@@ -1,7 +1,5 @@
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'dart:convert';
-import 'dart:io';
 import 'package:flutter/material.dart';
 
 class AuthController extends GetxController {
