@@ -21,10 +21,10 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-
-fonts:
+  fonts:
   - family: Kanit
     fonts:
       - asset: assets/fonts/Kanit-Regular.ttf
       - asset: assets/fonts/Kanit-Bold.ttf
         weight: 700
+

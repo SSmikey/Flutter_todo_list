@@ -10,7 +10,6 @@ class AuthController extends GetxController {
     return emailRegex.hasMatch(email);
   }
 
-  final String userFilePath = 'lib/app/data/users.json';
   List<Map<String, dynamic>> users = [];
   final _box = GetStorage();
   final isLoggedIn = false.obs;
@@ -19,24 +18,11 @@ class AuthController extends GetxController {
   void onInit() {
     super.onInit();
     isLoggedIn.value = _box.read('loggedIn') ?? false;
-    loadUsers();
-  }
-
-  void loadUsers() {
-    try {
-      final file = File(userFilePath);
-      if (file.existsSync()) {
-        final content = file.readAsStringSync();
-        users = List<Map<String, dynamic>>.from(json.decode(content));
-      }
-    } catch (e) {
-      users = [];
-    }
+    users = List<Map<String, dynamic>>.from(_box.read('users') ?? []);
   }
 
   void saveUsers() {
-    final file = File(userFilePath);
-    file.writeAsStringSync(json.encode(users));
+    _box.write('users', users);
   }
 
   // สมัครสมาชิกใหม่

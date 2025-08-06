@@ -140,21 +140,35 @@ class RegisterPage extends StatelessWidget {
                                 );
                               } else {
                                 Get.snackbar(
-                                  'ข้อผิดพลาด',
-                                  result['errorMessage'] ?? 'เกิดข้อผิดพลาด',
+                                  '',
+                                  '',
                                   backgroundColor: Colors.red.shade100,
-                                  colorText: Colors.red,
                                   snackPosition: SnackPosition.TOP,
+                                  messageText: Text(
+                                    result['errorMessage'] ?? 'เกิดข้อผิดพลาด',
+                                    style: const TextStyle(fontFamily: 'Kanit', color: Colors.red, fontSize: 16),
+                                  ),
+                                  titleText: const Text(
+                                    'ข้อผิดพลาด',
+                                    style: TextStyle(fontFamily: 'Kanit', color: Colors.red, fontWeight: FontWeight.bold, fontSize: 16),
+                                  ),
                                 );
                               }
                             } catch (e) {
                               Get.back(); // ปิด dialog loading กรณี error
                               Get.snackbar(
-                                'ข้อผิดพลาด',
-                                'เกิดข้อผิดพลาด: $e',
+                                '',
+                                '',
                                 backgroundColor: Colors.red.shade100,
-                                colorText: Colors.red,
                                 snackPosition: SnackPosition.TOP,
+                                messageText: Text(
+                                  'เกิดข้อผิดพลาด: ${e.toString()}',
+                                  style: const TextStyle(fontFamily: 'Kanit', color: Colors.red, fontSize: 16),
+                                ),
+                                titleText: const Text(
+                                  'ข้อผิดพลาด',
+                                  style: TextStyle(fontFamily: 'Kanit', color: Colors.red, fontWeight: FontWeight.bold, fontSize: 16),
+                                ),
                               );
                             }
                           },

@@ -11,7 +11,6 @@ class LoginPage extends StatelessWidget {
     final emailCtrl = TextEditingController();
     final passwordCtrl = TextEditingController();
     final formKey = GlobalKey<FormState>();
-    bool isLoading = false;
 
     // เช็ค argument ที่ส่งมาจาก RegisterPage
     WidgetsBinding.instance.addPostFrameCallback((_) {
