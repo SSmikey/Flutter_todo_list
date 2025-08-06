@@ -4,6 +4,7 @@ import '../views/home_page.dart';
 import '../views/todo_form_page.dart';
 import '../views/stats_page.dart';
 import '../views/register_page.dart';
+import '../views/settings_page.dart';
 
 class AppPages {
   static String INITIAL = '/login';
@@ -14,5 +15,6 @@ class AppPages {
     GetPage(name: '/home', page: () => HomePage()),
     GetPage(name: '/form', page: () => const TodoFormPage()),
     GetPage(name: '/stats', page: () => const StatsPage()),
+    GetPage(name: '/settings', page: () => const SettingsPage()),
   ];
 }

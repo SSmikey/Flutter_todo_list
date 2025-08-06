@@ -34,6 +34,7 @@ class HomePage extends StatelessWidget {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor, // ใช้ theme color
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -63,16 +64,15 @@ class HomePage extends StatelessWidget {
                           height: 4,
                           margin: const EdgeInsets.only(bottom: 16),
                           decoration: BoxDecoration(
-                            color: Colors.grey[300],
+                            color: Theme.of(context).dividerColor, // ใช้ theme color
                             borderRadius: BorderRadius.circular(2),
                           ),
                         ),
                       ),
                       Text(
                         existing == null ? 'เพิ่ม Task' : 'แก้ไข Task',
-                        style: const TextStyle(
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.bold,
-                          fontSize: 18,
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -102,8 +102,12 @@ class HomePage extends StatelessWidget {
                       const SizedBox(height: 10),
                       Row(
                         children: [
-                          const Text('วันครบกำหนด: '),
-                          Text(getDateTimeString(pickedDate, pickedTime)),
+                          Text('วันครบกำหนด: ', 
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                          Text(getDateTimeString(pickedDate, pickedTime),
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
                           IconButton(
                             icon: const Icon(Icons.calendar_today),
                             onPressed: () async {
@@ -246,7 +250,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      // ลบ backgroundColor: Colors.white ออก เพื่อให้ใช้ theme default
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12),
@@ -256,15 +260,17 @@ class HomePage extends StatelessWidget {
               // Header
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: const [
+                children: [
                   Row(
                     children: [
-                      Icon(Icons.calendar_today, size: 20),
-                      SizedBox(width: 8),
+                      Icon(Icons.calendar_today, 
+                        size: 20,
+                        color: Theme.of(context).iconTheme.color, // ใช้ theme color
+                      ),
+                      const SizedBox(width: 8),
                       Text(
                         "Tasks management",
-                        style: TextStyle(
-                          fontSize: 16,
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -328,10 +334,12 @@ class HomePage extends StatelessWidget {
               // Tasks header
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: const [
+                children: [
                   Text(
                     "Tasks",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ],
               ),
@@ -342,11 +350,19 @@ class HomePage extends StatelessWidget {
                 child: Obx(() {
                   final filtered = controller.filteredTodos;
                   if (filtered.isEmpty) {
-                    return const Center(child: Text('ไม่มีรายการ ToDo'));
+                    return Center(
+                      child: Text(
+                        'ไม่มีรายการ ToDo',
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      ),
+                    );
                   }
                   return ListView.separated(
                     itemCount: filtered.length,
-                    separatorBuilder: (_, __) => const Divider(height: 1),
+                    separatorBuilder: (_, __) => Divider(
+                      height: 1,
+                      color: Theme.of(context).dividerColor, // ใช้ theme color
+                    ),
                     itemBuilder: (_, index) {
                       final todo = filtered[index];
                       String dateTimeStr = '';
@@ -370,7 +386,7 @@ class HomePage extends StatelessWidget {
                                 todo: todo,
                                 cardColor: todo.isDone == true
                                     ? Colors.teal.withOpacity(0.15)
-                                    : Colors.white,
+                                    : Theme.of(context).cardColor, // ใช้ theme color
                               ),
                               if (dateTimeStr.isNotEmpty)
                                 Padding(
@@ -381,9 +397,8 @@ class HomePage extends StatelessWidget {
                                   ),
                                   child: Text(
                                     'กำหนด: $dateTimeStr',
-                                    style: const TextStyle(
-                                      fontSize: 13,
-                                      color: Colors.grey,
+                                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.7),
                                     ),
                                   ),
                                 ),
@@ -424,11 +439,7 @@ class HomePage extends StatelessWidget {
             IconButton(
               icon: const Icon(Icons.settings),
               onPressed: () {
-                Get.snackbar(
-                  "ยังไม่รองรับ",
-                  "หน้านี้ยังไม่เปิดใช้งาน",
-                  snackPosition: SnackPosition.BOTTOM,
-                );
+                Get.toNamed('/settings');
               },
             ),
           ],

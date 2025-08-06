@@ -14,7 +14,7 @@ class RegisterPage extends StatelessWidget {
     final formKey = GlobalKey<FormState>();
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F6FA),
+      backgroundColor: const Color.fromARGB(255, 124, 127, 139),
       body: Center(
         child: SingleChildScrollView(
           child: Padding(
@@ -117,12 +117,15 @@ class RegisterPage extends StatelessWidget {
                             backgroundColor: Colors.blue,
                           ),
                           onPressed: () async {
-                            if (formKey.currentState?.validate() != true) return;
+                            if (formKey.currentState?.validate() != true)
+                              return;
                             FocusScope.of(context).unfocus();
                             showDialog(
                               context: context,
                               barrierDismissible: false,
-                              builder: (_) => const Center(child: CircularProgressIndicator()),
+                              builder: (_) => const Center(
+                                child: CircularProgressIndicator(),
+                              ),
                             );
                             try {
                               final result = await authCtrl.register(
@@ -135,7 +138,8 @@ class RegisterPage extends StatelessWidget {
                                 Get.offAllNamed(
                                   '/login',
                                   arguments: {
-                                    'successMessage': 'สร้างบัญชีผู้ใช้เรียบร้อยแล้ว ! กรุณาเข้าสู่ระบบ.',
+                                    'successMessage':
+                                        'สร้างบัญชีผู้ใช้เรียบร้อยแล้ว ! กรุณาเข้าสู่ระบบ.',
                                   },
                                 );
                               } else {
@@ -146,11 +150,20 @@ class RegisterPage extends StatelessWidget {
                                   snackPosition: SnackPosition.TOP,
                                   messageText: Text(
                                     result['errorMessage'] ?? 'เกิดข้อผิดพลาด',
-                                    style: const TextStyle(fontFamily: 'Kanit', color: Colors.red, fontSize: 16),
+                                    style: const TextStyle(
+                                      fontFamily: 'Kanit',
+                                      color: Colors.red,
+                                      fontSize: 16,
+                                    ),
                                   ),
                                   titleText: const Text(
                                     'ข้อผิดพลาด',
-                                    style: TextStyle(fontFamily: 'Kanit', color: Colors.red, fontWeight: FontWeight.bold, fontSize: 16),
+                                    style: TextStyle(
+                                      fontFamily: 'Kanit',
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
                                   ),
                                 );
                               }
@@ -163,11 +176,20 @@ class RegisterPage extends StatelessWidget {
                                 snackPosition: SnackPosition.TOP,
                                 messageText: Text(
                                   'เกิดข้อผิดพลาด: ${e.toString()}',
-                                  style: const TextStyle(fontFamily: 'Kanit', color: Colors.red, fontSize: 16),
+                                  style: const TextStyle(
+                                    fontFamily: 'Kanit',
+                                    color: Colors.red,
+                                    fontSize: 16,
+                                  ),
                                 ),
                                 titleText: const Text(
                                   'ข้อผิดพลาด',
-                                  style: TextStyle(fontFamily: 'Kanit', color: Colors.red, fontWeight: FontWeight.bold, fontSize: 16),
+                                  style: TextStyle(
+                                    fontFamily: 'Kanit',
+                                    color: Colors.red,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
                                 ),
                               );
                             }

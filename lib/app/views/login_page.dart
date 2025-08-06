@@ -28,7 +28,7 @@ class LoginPage extends StatelessWidget {
     });
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F6FA),
+      backgroundColor: const Color.fromARGB(255, 124, 127, 139),
       body: Center(
         child: SingleChildScrollView(
           child: Padding(
