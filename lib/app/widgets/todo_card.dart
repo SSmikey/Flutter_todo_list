@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/todo_controller.dart';
@@ -28,17 +27,16 @@ class TodoCard extends StatelessWidget {
         ),
         title: Text(
           todo.title,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-          ),
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (todo.category != null && todo.category!.isNotEmpty)
-              Text('หมวดหมู่: ${todo.category!}',
-                  style: theme.textTheme.bodySmall),
-            
+              Text(
+                'หมวดหมู่: ${todo.category!}',
+                style: theme.textTheme.bodySmall,
+              ),
           ],
         ),
         trailing: IconButton(
