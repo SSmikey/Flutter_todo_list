@@ -31,101 +31,151 @@ class HomePage extends StatelessWidget {
       return "$dateStr $timeStr";
     }
 
-    showDialog(
+    showModalBottomSheet(
       context: context,
-      builder: (_) => AlertDialog(
-        title: Text(existing == null ? 'เพิ่ม ToDo' : 'แก้ไข ToDo'),
-        content: StatefulBuilder(
-          builder: (context, setState) => SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: titleC,
-                  decoration: const InputDecoration(labelText: 'หัวข้อ'),
-                ),
-                const SizedBox(height: 10),
-                DropdownButtonFormField<String>(
-                  value: selectedCategory,
-                  decoration: const InputDecoration(labelText: 'หมวดหมู่'),
-                  items: categories
-                      .map(
-                        (cat) => DropdownMenuItem(value: cat, child: Text(cat)),
-                      )
-                      .toList(),
-                  onChanged: (val) {
-                    if (val != null) setState(() => selectedCategory = val);
-                  },
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  children: [
-                    const Text('วันครบกำหนด: '),
-                    Text(getDateTimeString(pickedDate, pickedTime)),
-                    IconButton(
-                      icon: const Icon(Icons.calendar_today),
-                      onPressed: () async {
-                        final dt = await showDatePicker(
-                          context: context,
-                          initialDate: pickedDate ?? DateTime.now(),
-                          firstDate: DateTime(2000),
-                          lastDate: DateTime(2100),
-                        );
-                        if (dt != null) setState(() => pickedDate = dt);
-                      },
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.access_time),
-                      onPressed: () async {
-                        final tm = await showTimePicker(
-                          context: context,
-                          initialTime: pickedTime ?? TimeOfDay.now(),
-                        );
-                        if (tm != null) setState(() => pickedTime = tm);
-                      },
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('ยกเลิก'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              final title = titleC.text.trim();
-              final category = selectedCategory;
-              if (title.isEmpty) return;
-              DateTime? finalDate;
-              if (pickedDate != null) {
-                if (pickedTime != null) {
-                  finalDate = DateTime(
-                    pickedDate!.year,
-                    pickedDate!.month,
-                    pickedDate!.day,
-                    pickedTime!.hour,
-                    pickedTime!.minute,
-                  );
-                } else {
-                  finalDate = pickedDate;
-                }
-              }
-              if (existing == null) {
-                controller.addTodo(title, category, finalDate);
-              } else {
-                controller.deleteTodo(existing.id);
-                controller.addTodo(title, category, finalDate);
-              }
-              Navigator.pop(context);
-            },
-            child: Text(existing == null ? 'เพิ่ม' : 'บันทึก'),
-          ),
-        ],
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
+      builder: (context) {
+        return DraggableScrollableSheet(
+          initialChildSize: 0.7,
+          minChildSize: 0.5,
+          maxChildSize: 0.9,
+          expand: false,
+          builder: (context, scrollController) {
+            return Padding(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+                left: 16,
+                right: 16,
+                top: 24,
+              ),
+              child: StatefulBuilder(
+                builder: (context, setState) => SingleChildScrollView(
+                  controller: scrollController,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Center(
+                        child: Container(
+                          width: 40,
+                          height: 4,
+                          margin: const EdgeInsets.only(bottom: 16),
+                          decoration: BoxDecoration(
+                            color: Colors.grey[300],
+                            borderRadius: BorderRadius.circular(2),
+                          ),
+                        ),
+                      ),
+                      Text(
+                        existing == null ? 'เพิ่ม Task' : 'แก้ไข Task',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      TextField(
+                        controller: titleC,
+                        decoration: const InputDecoration(labelText: 'หัวข้อ'),
+                      ),
+                      const SizedBox(height: 10),
+                      DropdownButtonFormField<String>(
+                        value: selectedCategory,
+                        decoration: const InputDecoration(
+                          labelText: 'หมวดหมู่',
+                        ),
+                        items: categories
+                            .map(
+                              (cat) => DropdownMenuItem(
+                                value: cat,
+                                child: Text(cat),
+                              ),
+                            )
+                            .toList(),
+                        onChanged: (val) {
+                          if (val != null)
+                            setState(() => selectedCategory = val);
+                        },
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        children: [
+                          const Text('วันครบกำหนด: '),
+                          Text(getDateTimeString(pickedDate, pickedTime)),
+                          IconButton(
+                            icon: const Icon(Icons.calendar_today),
+                            onPressed: () async {
+                              final dt = await showDatePicker(
+                                context: context,
+                                initialDate: pickedDate ?? DateTime.now(),
+                                firstDate: DateTime(2000),
+                                lastDate: DateTime(2100),
+                              );
+                              if (dt != null) setState(() => pickedDate = dt);
+                            },
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.access_time),
+                            onPressed: () async {
+                              final tm = await showTimePicker(
+                                context: context,
+                                initialTime: pickedTime ?? TimeOfDay.now(),
+                              );
+                              if (tm != null) setState(() => pickedTime = tm);
+                            },
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 18),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text('ยกเลิก'),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              final title = titleC.text.trim();
+                              final category = selectedCategory;
+                              if (title.isEmpty) return;
+                              DateTime? finalDate;
+                              if (pickedDate != null) {
+                                if (pickedTime != null) {
+                                  finalDate = DateTime(
+                                    pickedDate!.year,
+                                    pickedDate!.month,
+                                    pickedDate!.day,
+                                    pickedTime!.hour,
+                                    pickedTime!.minute,
+                                  );
+                                } else {
+                                  finalDate = pickedDate;
+                                }
+                              }
+                              if (existing == null) {
+                                controller.addTodo(title, category, finalDate);
+                              } else {
+                                controller.deleteTodo(existing.id);
+                                controller.addTodo(title, category, finalDate);
+                              }
+                              Navigator.pop(context);
+                            },
+                            child: Text(existing == null ? 'เพิ่ม' : 'บันทึก'),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 
