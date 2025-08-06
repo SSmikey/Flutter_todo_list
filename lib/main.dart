@@ -20,8 +20,16 @@ class MyApp extends StatelessWidget {
       title: 'To Do List',
       debugShowCheckedModeBanner: false,
       themeMode: ThemeMode.system,
-      theme: ThemeData.light(useMaterial3: true),
-      darkTheme: ThemeData.dark(useMaterial3: true),
+      theme: ThemeData(
+        useMaterial3: true,
+        fontFamily: 'Kanit',
+        brightness: Brightness.light,
+      ),
+      darkTheme: ThemeData(
+        useMaterial3: true,
+        fontFamily: 'Kanit',
+        brightness: Brightness.dark,
+      ),
       initialRoute: AppPages.INITIAL,
       getPages: AppPages.routes,
     );

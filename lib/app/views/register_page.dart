@@ -117,34 +117,41 @@ class RegisterPage extends StatelessWidget {
                             backgroundColor: Colors.blue,
                           ),
                           onPressed: () async {
-                            if (formKey.currentState?.validate() != true)
-                              return;
+                            if (formKey.currentState?.validate() != true) return;
                             FocusScope.of(context).unfocus();
                             showDialog(
                               context: context,
                               barrierDismissible: false,
-                              builder: (_) => const Center(
-                                child: CircularProgressIndicator(),
-                              ),
+                              builder: (_) => const Center(child: CircularProgressIndicator()),
                             );
-                            final result = await authCtrl.register(
-                              nameCtrl.text.trim(),
-                              emailCtrl.text.trim(),
-                              passwordCtrl.text.trim(),
-                            );
-                            Navigator.of(context).pop();
-                            if (result['success'] == true) {
-                              Get.offAllNamed(
-                                '/login',
-                                arguments: {
-                                  'successMessage':
-                                      'สร้างบัญชีผู้ใช้เรียบร้อยแล้ว ! กรุณาเข้าสู่ระบบ.',
-                                },
+                            try {
+                              final result = await authCtrl.register(
+                                nameCtrl.text.trim(),
+                                emailCtrl.text.trim(),
+                                passwordCtrl.text.trim(),
                               );
-                            } else {
+                              Get.back(); // ปิด dialog loading
+                              if (result['success'] == true) {
+                                Get.offAllNamed(
+                                  '/login',
+                                  arguments: {
+                                    'successMessage': 'สร้างบัญชีผู้ใช้เรียบร้อยแล้ว ! กรุณาเข้าสู่ระบบ.',
+                                  },
+                                );
+                              } else {
+                                Get.snackbar(
+                                  'ข้อผิดพลาด',
+                                  result['errorMessage'] ?? 'เกิดข้อผิดพลาด',
+                                  backgroundColor: Colors.red.shade100,
+                                  colorText: Colors.red,
+                                  snackPosition: SnackPosition.TOP,
+                                );
+                              }
+                            } catch (e) {
+                              Get.back(); // ปิด dialog loading กรณี error
                               Get.snackbar(
                                 'ข้อผิดพลาด',
-                                result['errorMessage'] ?? 'เกิดข้อผิดพลาด',
+                                'เกิดข้อผิดพลาด: $e',
                                 backgroundColor: Colors.red.shade100,
                                 colorText: Colors.red,
                                 snackPosition: SnackPosition.TOP,
