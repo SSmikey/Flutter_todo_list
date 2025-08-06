@@ -15,13 +15,19 @@ class HomePage extends StatelessWidget {
     String selectedCategory = existing?.category ?? categories[0];
     DateTime? pickedDate = existing?.dueDate;
     TimeOfDay? pickedTime = existing?.dueDate != null
-        ? TimeOfDay(hour: existing!.dueDate!.hour, minute: existing.dueDate!.minute)
+        ? TimeOfDay(
+            hour: existing!.dueDate!.hour,
+            minute: existing.dueDate!.minute,
+          )
         : null;
 
     String getDateTimeString(DateTime? date, TimeOfDay? time) {
       if (date == null) return 'ไม่ระบุ';
-      final dateStr = "${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}";
-      final timeStr = time != null ? "${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}" : '--:--';
+      final dateStr =
+          "${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}";
+      final timeStr = time != null
+          ? "${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}"
+          : '--:--';
       return "$dateStr $timeStr";
     }
 
@@ -42,10 +48,11 @@ class HomePage extends StatelessWidget {
                 DropdownButtonFormField<String>(
                   value: selectedCategory,
                   decoration: const InputDecoration(labelText: 'หมวดหมู่'),
-                  items: categories.map((cat) => DropdownMenuItem(
-                    value: cat,
-                    child: Text(cat),
-                  )).toList(),
+                  items: categories
+                      .map(
+                        (cat) => DropdownMenuItem(value: cat, child: Text(cat)),
+                      )
+                      .toList(),
                   onChanged: (val) {
                     if (val != null) setState(() => selectedCategory = val);
                   },
@@ -127,7 +134,11 @@ class HomePage extends StatelessWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
         onTap: () {
-          if (label == "Work") {
+          if (label == "Completed") {
+            controller.setFilter('completed');
+          } else if (label == "Pending") {
+            controller.setFilter('pending');
+          } else if (label == "Work") {
             controller.setFilter('งาน');
           } else if (label == "School") {
             controller.setFilter('โรงเรียน');
@@ -151,7 +162,11 @@ class HomePage extends StatelessWidget {
             children: [
               Text(
                 count,
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: color),
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: color,
+                ),
               ),
               const SizedBox(height: 4),
               Text(label, style: TextStyle(color: color)),
@@ -182,7 +197,10 @@ class HomePage extends StatelessWidget {
                       SizedBox(width: 8),
                       Text(
                         "Tasks management",
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ],
                   ),
@@ -196,23 +214,43 @@ class HomePage extends StatelessWidget {
                 final completed = todos.where((t) => t.isDone == true).length;
                 final pending = todos.where((t) => t.isDone != true).length;
                 final work = todos.where((t) => t.category == 'งาน').length;
-                final school = todos.where((t) => t.category == 'โรงเรียน').length;
-                final personal = todos.where((t) => t.category == 'ส่วนตัว').length;
+                final school = todos
+                    .where((t) => t.category == 'โรงเรียน')
+                    .length;
+                final personal = todos
+                    .where((t) => t.category == 'ส่วนตัว')
+                    .length;
                 final other = todos.where((t) => t.category == 'อื่นๆ').length;
                 return Column(
                   children: [
                     Row(
                       children: [
-                        _buildStatBox(completed.toString(), "Completed", Colors.teal),
-                        _buildStatBox(pending.toString(), "Pending", Colors.red),
+                        _buildStatBox(
+                          completed.toString(),
+                          "Completed",
+                          Colors.teal,
+                        ),
+                        _buildStatBox(
+                          pending.toString(),
+                          "Pending",
+                          Colors.red,
+                        ),
                       ],
                     ),
                     const SizedBox(height: 12),
                     Row(
                       children: [
                         _buildStatBox(work.toString(), "Work", Colors.pink),
-                        _buildStatBox(school.toString(), "School", Colors.orangeAccent),
-                        _buildStatBox(personal.toString(), "Personal", Colors.deepPurpleAccent),
+                        _buildStatBox(
+                          school.toString(),
+                          "School",
+                          Colors.orangeAccent,
+                        ),
+                        _buildStatBox(
+                          personal.toString(),
+                          "Personal",
+                          Colors.deepPurpleAccent,
+                        ),
                         _buildStatBox(other.toString(), "Other", Colors.indigo),
                       ],
                     ),
@@ -225,7 +263,10 @@ class HomePage extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: const [
-                  Text("Tasks", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                  Text(
+                    "Tasks",
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
                 ],
               ),
               const SizedBox(height: 12),
@@ -245,8 +286,9 @@ class HomePage extends StatelessWidget {
                       String dateTimeStr = '';
                       if (todo.dueDate != null) {
                         final d = todo.dueDate!;
-                        dateTimeStr = "${d.day.toString().padLeft(2, '0')}/${d.month.toString().padLeft(2, '0')}/${d.year} "
-                          "${d.hour.toString().padLeft(2, '0')}:${d.minute.toString().padLeft(2, '0')}";
+                        dateTimeStr =
+                            "${d.day.toString().padLeft(2, '0')}/${d.month.toString().padLeft(2, '0')}/${d.year} "
+                            "${d.hour.toString().padLeft(2, '0')}:${d.minute.toString().padLeft(2, '0')}";
                       }
                       return Padding(
                         padding: const EdgeInsets.symmetric(vertical: 4.0),
@@ -255,14 +297,23 @@ class HomePage extends StatelessWidget {
                           children: [
                             TodoCard(
                               todo: todo,
-                              cardColor: todo.isDone == true ? Colors.teal.withOpacity(0.15) : Colors.white,
+                              cardColor: todo.isDone == true
+                                  ? Colors.teal.withOpacity(0.15)
+                                  : Colors.white,
                             ),
                             if (dateTimeStr.isNotEmpty)
                               Padding(
-                                padding: const EdgeInsets.only(left: 12, top: 2, bottom: 8),
+                                padding: const EdgeInsets.only(
+                                  left: 12,
+                                  top: 2,
+                                  bottom: 8,
+                                ),
                                 child: Text(
                                   'กำหนด: $dateTimeStr',
-                                  style: const TextStyle(fontSize: 13, color: Colors.grey),
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    color: Colors.grey,
+                                  ),
                                 ),
                               ),
                           ],
@@ -292,14 +343,9 @@ class HomePage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             IconButton(
-               icon: const Icon(Icons.home),
-               onPressed: () {
-                  Get.snackbar(
-                    "ยังไม่รองรับ",
-                    "หน้านี้ยังไม่เปิดใช้งาน",
-                    snackPosition: SnackPosition.BOTTOM,
-                    duration: const Duration(seconds: 2),
-                  );
+              icon: const Icon(Icons.home),
+              onPressed: () {
+                controller.setFilter('');
               },
             ),
             const SizedBox(width: 48), // Space for FAB

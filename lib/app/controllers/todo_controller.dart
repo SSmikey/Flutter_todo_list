@@ -1,4 +1,3 @@
-
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import '../models/todo_model.dart';
@@ -31,13 +30,15 @@ class TodoController extends GetxController {
   }
 
   void addTodo(String title, String category, DateTime? dueDate) {
-    todos.add(TodoModel(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      title: title,
-      isDone: false,
-      category: category,
-      dueDate: dueDate,
-    ));
+    todos.add(
+      TodoModel(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        title: title,
+        isDone: false,
+        category: category,
+        dueDate: dueDate,
+      ),
+    );
     saveTodos();
     filterTodos();
   }
@@ -71,24 +72,42 @@ class TodoController extends GetxController {
 
   void filterTodos() {
     switch (filter.value) {
-      case 'done':
+      case 'completed':
         filteredTodos.assignAll(todos.where((todo) => todo.isDone));
         break;
       case 'pending':
         filteredTodos.assignAll(todos.where((todo) => !todo.isDone));
         break;
-      case 'work':
+      case 'งาน':
         filteredTodos.assignAll(todos.where((todo) => todo.category == 'งาน'));
         break;
-      case 'personal':
-        filteredTodos.assignAll(todos.where((todo) => todo.category == 'ส่วนตัว'));
+      case 'โรงเรียน':
+        filteredTodos.assignAll(
+          todos.where((todo) => todo.category == 'โรงเรียน'),
+        );
+        break;
+      case 'ส่วนตัว':
+        filteredTodos.assignAll(
+          todos.where((todo) => todo.category == 'ส่วนตัว'),
+        );
+        break;
+      case 'อื่นๆ':
+        filteredTodos.assignAll(
+          todos.where((todo) => todo.category == 'อื่นๆ'),
+        );
         break;
       default:
         filteredTodos.assignAll(todos);
     }
   }
 
-   void updateTodo(String id, String title, String category, DateTime? dueDate, {String? note}) {
+  void updateTodo(
+    String id,
+    String title,
+    String category,
+    DateTime? dueDate, {
+    String? note,
+  }) {
     var index = todos.indexWhere((todo) => todo.id == id);
     if (index != -1) {
       todos[index] = TodoModel(
