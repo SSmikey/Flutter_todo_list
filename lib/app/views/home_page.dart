@@ -31,8 +31,14 @@ class HomePage extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              TextField(controller: titleC, decoration: const InputDecoration(labelText: 'หัวข้อ')),
-              TextField(controller: categoryC, decoration: const InputDecoration(labelText: 'หมวดหมู่')),
+              TextField(
+                controller: titleC,
+                decoration: const InputDecoration(labelText: 'หัวข้อ'),
+              ),
+              TextField(
+                controller: categoryC,
+                decoration: const InputDecoration(labelText: 'หมวดหมู่'),
+              ),
               const SizedBox(height: 10),
               Row(
                 children: [
@@ -56,7 +62,10 @@ class HomePage extends StatelessWidget {
           ),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('ยกเลิก')),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('ยกเลิก'),
+          ),
           ElevatedButton(
             onPressed: () {
               final title = titleC.text.trim();
@@ -77,48 +86,149 @@ class HomePage extends StatelessWidget {
     );
   }
 
+  Widget _buildStatBox(String count, String label, Color color) {
+    return Expanded(
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 4),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.15),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              count,
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: color),
+            ),
+            const SizedBox(height: 4),
+            Text(label, style: TextStyle(color: color)),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('รายการ ToDo'),
-        actions: [
-          Obx(() => Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: Center(
-                  child: Text(
-                    'เสร็จ: ${controller.doneCount}  ค้าง: ${controller.pendingCount}',
-                    style: const TextStyle(fontSize: 16),
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: const [
+                  Row(
+                    children: [
+                      Icon(Icons.calendar_today, size: 20),
+                      SizedBox(width: 8),
+                      Text(
+                        "test day",
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                    ],
                   ),
-                ),
-              )),
-          IconButton(
-            icon: const Icon(Icons.delete_sweep),
-            tooltip: 'ล้างทั้งหมด',
-            onPressed: () {
-              controller.clearAll();
-            },
+                ],
+              ),
+              const SizedBox(height: 24),
+
+              // Statistics Grid
+              Column(
+                children: [
+                  Row(
+                    children: [
+                      _buildStatBox("32", "Completed", Colors.teal),
+                      _buildStatBox("24", "Pending", Colors.deepOrange),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      _buildStatBox("16", "Cancelled", Colors.pink),
+                      _buildStatBox("08", "Ongoing", Colors.indigo),
+                    ],
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+
+              // Tasks header
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: const [
+                  Text("Tasks", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                ],
+              ),
+              const SizedBox(height: 12),
+
+              // Tasks List
+              Expanded(
+                child: Obx(() {
+                  if (controller.todos.isEmpty) {
+                    return const Center(child: Text('ไม่มีรายการ ToDo'));
+                  }
+                  return ListView.separated(
+                    itemCount: controller.todos.length,
+                    separatorBuilder: (_, __) => const Divider(height: 1),
+                    itemBuilder: (_, index) {
+                      final todo = controller.todos[index];
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4.0),
+                        child: TodoCard(todo: todo),
+                      );
+                    },
+                  );
+                }),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
-      body: Obx(() {
-        if (controller.todos.isEmpty) {
-          return const Center(child: Text('ไม่มีรายการ ToDo'));
-        }
-        return ListView.builder(
-          itemCount: controller.todos.length,
-          itemBuilder: (_, index) {
-            final todo = controller.todos[index];
-            return TodoCard(
-              todo: todo,
-            );
-          },
-        );
-      }),
+
+      // Add Button
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showAddOrEditDialog(context),
-        tooltip: 'เพิ่มรายการ ToDo',
         child: const Icon(Icons.add),
+      ),
+
+      // Bottom Navigation Bar
+      bottomNavigationBar: BottomAppBar(
+        shape: const CircularNotchedRectangle(),
+        notchMargin: 6.0,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            IconButton(
+               icon: const Icon(Icons.home),
+               onPressed: () {
+                  Get.snackbar(
+                    "ยังไม่รองรับ",
+                    "หน้านี้ยังไม่เปิดใช้งาน",
+                    snackPosition: SnackPosition.BOTTOM,
+                    duration: const Duration(seconds: 2),
+                  );
+              },
+            ),
+            const SizedBox(width: 48), // Space for FAB
+            IconButton(
+              icon: const Icon(Icons.settings),
+              onPressed: () {
+                Get.snackbar(
+                  "ยังไม่รองรับ",
+                  "หน้านี้ยังไม่เปิดใช้งาน",
+                  snackPosition: SnackPosition.BOTTOM,
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
