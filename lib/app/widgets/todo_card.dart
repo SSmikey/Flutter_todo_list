@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/todo_controller.dart';
 import '../models/todo_model.dart';
-import 'package:intl/intl.dart';
-
 class TodoCard extends StatelessWidget {
   final TodoModel todo;
   final Color? cardColor;
