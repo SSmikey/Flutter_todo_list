@@ -2,31 +2,46 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/auth_controller.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final authCtrl = Get.find<AuthController>();
-    final emailCtrl = TextEditingController();
-    final passwordCtrl = TextEditingController();
-    final formKey = GlobalKey<FormState>();
+  State<LoginPage> createState() => _LoginPageState();
+}
 
-    // เช็ค argument ที่ส่งมาจาก RegisterPage
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+class _LoginPageState extends State<LoginPage> {
+  final authCtrl = Get.find<AuthController>();
+  final emailCtrl = TextEditingController();
+  final passwordCtrl = TextEditingController();
+  final formKey = GlobalKey<FormState>();
+
+  bool _hasShownSnackbar = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    if (!_hasShownSnackbar) {
       final args = ModalRoute.of(context)?.settings.arguments;
       if (args is Map && args['successMessage'] != null) {
-        Get.snackbar(
-          'สำเร็จ',
-          args['successMessage'],
-          backgroundColor: Colors.green.shade100,
-          colorText: Colors.green,
-          duration: const Duration(seconds: 2),
-          snackPosition: SnackPosition.TOP,
-        );
-      }
-    });
+        _hasShownSnackbar = true;
 
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          Get.snackbar(
+            'สำเร็จ',
+            args['successMessage'],
+            backgroundColor: Colors.green.shade100,
+            colorText: Colors.green,
+            duration: const Duration(seconds: 2),
+            snackPosition: SnackPosition.TOP,
+          );
+        });
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 124, 127, 139),
       body: Center(

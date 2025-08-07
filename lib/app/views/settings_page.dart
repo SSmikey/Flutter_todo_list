@@ -32,7 +32,7 @@ class SettingsPage extends StatelessWidget {
             const SizedBox(height: 24),
             ListTile(
               leading: const Icon(Icons.login),
-              title: const Text('ไปที่หน้า Login'),
+              title: const Text('ไปที่หน้า Logout'),
               onTap: () {
                 Get.toNamed('/login');
               },
